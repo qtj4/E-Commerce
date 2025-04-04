@@ -3,9 +3,9 @@ package service
 import (
     "context"
     "github.com/google/uuid"
-    pbInventory "ecommerce/proto/inventory"
-    "ecommerce/internal/entity"
-    "ecommerce/internal/repository"
+    pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
+    "github.com/qtj4/E-Commerce/order-service/internal/entity"
+    "github.com/qtj4/E-Commerce/order-service/internal/repository"
     "time"
 )
 
@@ -27,10 +27,7 @@ func NewOrderService(repo repository.OrderRepository, inventoryClient pbInventor
 
 func (s *orderService) CreateOrder(userID string, items []*entity.OrderItem) (*entity.Order, error) {
     for _, item := range items {
-        pid, err := uuid.Parse(item.ProductID)
-        if err != nil {
-            return nil, err
-        }
+        pid := item.ProductID
         p, err := s.inventoryClient.GetProduct(context.Background(), &pbInventory.GetProductRequest{Id: pid.String()})
         if err != nil {
             return nil, err

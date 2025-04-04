@@ -1,8 +1,8 @@
 package config
 
 import (
-	pbInventory "github.com/yourusername/inventory-service/proto"
-	pbOrder "github.com/yourusername/order-service/proto"
+	pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
+	pbOrder "github.com/qtj4/E-Commerce/order-service/proto"
 	"google.golang.org/grpc"
 )
 

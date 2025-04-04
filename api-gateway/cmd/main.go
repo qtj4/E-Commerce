@@ -1,15 +1,19 @@
 package main
 
 import (
-    "log"
-    "github.com/gin-gonic/gin"
-    pbInventory "ecommerce/proto/inventory"
-    pbOrder "ecommerce/proto/order"
-    "ecommerce/internal/handler"
-    "ecommerce/internal/middleware"
+    "fmt"
+    "net"
+    
+    "github.com/jmoiron/sqlx"
+    _ "github.com/lib/pq"
+    "github.com/qtj4/E-Commerce/order-service/config"
+    "github.com/qtj4/E-Commerce/order-service/internal/handler"
+    "github.com/qtj4/E-Commerce/order-service/internal/repository"
+    "github.com/qtj4/E-Commerce/order-service/internal/service"
+    pb "github.com/qtj4/E-Commerce/order-service/proto"
+    pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
     "google.golang.org/grpc"
 )
-
 func main() {
     inventoryConn, err := grpc.Dial("inventory-service:50051", grpc.WithInsecure())
     if err != nil {

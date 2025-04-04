@@ -5,7 +5,7 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	pbInventory "github.com/yourusername/inventory-service/proto"
+	pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
 	"google.golang.org/grpc"
 )
 

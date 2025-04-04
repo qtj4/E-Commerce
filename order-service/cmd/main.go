@@ -6,12 +6,11 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
-	"github.com/yourusername/order-service/config"
-	"github.com/yourusername/order-service/internal/handler"
-	"github.com/yourusername/order-service/internal/repository"
-	"github.com/yourusername/order-service/internal/service"
-	pb "github.com/yourusername/order-service/proto"
-	pbInventory "github.com/yourusername/inventory-service/proto"
+	pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
+	"github.com/qtj4/E-Commerce/order-service/internal/handler"
+	"github.com/qtj4/E-Commerce/order-service/internal/repository"
+	"github.com/qtj4/E-Commerce/order-service/internal/service"
+	pb "github.com/qtj4/E-Commerce/order-service/proto"
 	"google.golang.org/grpc"
 )
 
