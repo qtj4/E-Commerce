@@ -6,7 +6,7 @@ import (
     "E-Commerce/api-gateway/internal/middleware"
     pbInventory "E-Commerce/inventory-service/proto"
     "E-Commerce/order-service/internal/handler"
-    "E-Commerce/order-service/internal/repository"
+    "E-Commerce/order-serviceinternal/repository"
 	"E-Commerce/order-service/internal/service"
 	pb "E-Commerce/order-service/proto"
 
