@@ -46,7 +46,7 @@ func (r *productRepository) List(categoryID uuid.UUID, page, pageSize int) ([]*e
     var products []*entity.Product
     var total int
     query := "SELECT * FROM products"
-    count   := "SELECT COUNT(*) FROM products"
+    countQuery := "SELECT COUNT(*) FROM products"
     if categoryID != uuid.Nil {
         query += " WHERE category_id = $1"
         countQuery += " WHERE category_id = $1"

@@ -1,18 +1,18 @@
 package main
 
 import (
-    "fmt"
-    "net"
-    
-    "github.com/jmoiron/sqlx"
-    _ "github.com/lib/pq"
-    "E-Commerce/order-service/config"
+    "log"
+
+    "E-Commerce/api-gateway/internal/middleware"
+    pbInventory "E-Commerce/inventory-service/proto"
     "E-Commerce/order-service/internal/handler"
     "E-Commerce/order-service/internal/repository"
-    "E-Commerce/order-service/internal/service"
-    pb "E-Commerce/order-service/proto"
-    pbInventory "E-Commerce/inventory-service/proto"
-    "google.golang.org/grpc"
+	"E-Commerce/order-service/internal/service"
+	pb "E-Commerce/order-service/proto"
+
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
+	"google.golang.org/grpc"
 )
 func main() {
     inventoryConn, err := grpc.Dial("inventory-service:50051", grpc.WithInsecure())
@@ -28,7 +28,7 @@ func main() {
     defer orderConn.Close()
 
     inventoryClient := pbInventory.NewInventoryServiceClient(inventoryConn)
-    orderClient := pbOrder.NewOrderServiceClient(orderConn)
+    orderClient := pb.NewOrderServiceClient(orderConn)
 
     r := gin.Default()
     r.Use(middleware.Auth()) // Add authentication middleware
