@@ -3,7 +3,7 @@ package repository
 import (
     "github.com/google/uuid"
     "github.com/jmoiron/sqlx"
-    "ecommerce/internal/entity"
+    "E-Commerce/inventory-service/internal/entity"
 )
 
 type productRepository struct {

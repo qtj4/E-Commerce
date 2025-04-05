@@ -2,8 +2,8 @@ package service
 
 import (
     "github.com/google/uuid"
-    "ecommerce/internal/entity"
-    "ecommerce/internal/repository"
+    "E-Commerce/inventory-service/internal/entity"
+    "E-Commerce/inventory-service/internal/repository"
 )
 
 type InventoryService interface {

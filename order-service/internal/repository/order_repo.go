@@ -3,7 +3,7 @@ package repository
 import (
     "github.com/google/uuid"
     "github.com/jmoiron/sqlx"
-    "github.com/qtj4/E-Commerce/order-service/internal/entity"
+    "E-Commerce/order-service/internal/entity"
 )
 
 type orderRepository struct {

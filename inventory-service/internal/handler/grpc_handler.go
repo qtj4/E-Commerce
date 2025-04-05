@@ -3,9 +3,9 @@ package handler
 import (
     "context"
     "github.com/google/uuid"
-    pb "github.com/qtj4/E-Commerce/inventory-service/proto"
-    "github.com/qtj4/E-Commerce/inventory-service/internal/entity"
-    "github.com/qtj4/E-Commerce/inventory-service/internal/service"
+    pb "E-Commerce/inventory-service/proto"
+    "E-Commerce/inventory-service/internal/entity"
+    "E-Commerce/inventory-service/internal/service"
 )
 type InventoryGRPCServer struct {
     pb.UnimplementedInventoryServiceServer

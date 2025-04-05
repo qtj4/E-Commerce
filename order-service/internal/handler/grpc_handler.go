@@ -3,9 +3,9 @@ package handler
 import (
     "context"
     "github.com/google/uuid"
-    pb "github.com/qtj4/E-Commerce/order-service/proto"
-    "github.com/qtj4/E-Commerce/order-service/internal/service"
-    "github.com/qtj4/E-Commerce/order-service/internal/entity"
+    pb "E-Commerce/order-service/proto"
+    "E-Commerce/order-service/internal/service"
+    "E-Commerce/order-service/internal/entity"
 )
 
 type OrderGRPCServer struct {

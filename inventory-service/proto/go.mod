@@ -1,10 +1,12 @@
-module github.com/qtj4/E-Commerce/inventory-service/proto
+module E-Commerce/inventory-service/proto
 
 go 1.21
 
 require (
-	google.golang.org/grpc v1.58.3
+	google.golang.org/grpc v1.60.0
 	google.golang.org/protobuf v1.31.0
+	
+
 )
 
 require (

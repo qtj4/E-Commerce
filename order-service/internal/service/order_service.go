@@ -3,9 +3,9 @@ package service
 import (
     "context"
     "github.com/google/uuid"
-    pbInventory "github.com/qtj4/E-Commerce/inventory-service/proto"
-    "github.com/qtj4/E-Commerce/order-service/internal/entity"
-    "github.com/qtj4/E-Commerce/order-service/internal/repository"
+    pbInventory "E-Commerce/inventory-service/proto"
+    "E-Commerce/order-service/internal/entity"
+    "E-Commerce/order-service/internal/repository"
     "time"
 )
 

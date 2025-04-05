@@ -3,8 +3,8 @@ package handler
 import (
     "net/http"
     "strconv"
-    pbInventory "ecommerce/proto/inventory"
-    pbOrder "ecommerce/proto/order"
+    pbInventory "E-Commerce/inventory-service/proto"
+    pbOrder "E-Commerce/order-service/proto"
     "github.com/gin-gonic/gin"
 )
 
