@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -15,7 +16,8 @@ import (
 )
 
 func main() {
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=orders sslmode=disable")
+	dsn := os.Getenv("POSTGRES_URL")
+	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		panic(err)
 	}

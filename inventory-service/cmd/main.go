@@ -3,18 +3,21 @@ package main
 import (
 	"fmt"
 	"net"
+	"os"
 
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"E-Commerce/inventory-service/internal/handler"
 	"E-Commerce/inventory-service/internal/repository"
 	"E-Commerce/inventory-service/internal/service"
 	pb "E-Commerce/inventory-service/proto"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	db, err := sqlx.Connect("postgres", "user=postgres dbname=inventory sslmode=disable")
+	dsn := os.Getenv("POSTGRES_URL")
+	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		panic(err)
 	}

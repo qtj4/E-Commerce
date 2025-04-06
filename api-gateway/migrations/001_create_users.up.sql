@@ -1,3 +1,4 @@
+-- Active: 1743934244603@@localhost@5432@E-Commerce
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE users (
