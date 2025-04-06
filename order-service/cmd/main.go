@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("inventory-service:50051", grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}

@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	inventoryConn, err := grpc.Dial("inventory-service:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Inventory Service: %v", err)
 	} else {
@@ -23,7 +23,7 @@ func main() {
 	}
 	defer inventoryConn.Close()
 
-	orderConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
+	orderConn, err := grpc.Dial("order-service:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Order Service: %v", err)
 	} else {
