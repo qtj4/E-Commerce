@@ -5,9 +5,7 @@ import (
 
     "E-Commerce/api-gateway/internal/middleware"
     pbInventory "E-Commerce/inventory-service/proto"
-    "E-Commerce/order-service/internal/handler"
-    "E-Commerce/order-serviceinternal/repository"
-	"E-Commerce/order-service/internal/service"
+    "E-Commerce/api-gateway/internal/handler"
 	pb "E-Commerce/order-service/proto"
 
 	"github.com/gin-gonic/gin"
