@@ -5,9 +5,9 @@ import (
 
 	"E-Commerce/api-gateway/internal/handler"
 	"E-Commerce/api-gateway/internal/middleware"
+	"E-Commerce/api-gateway/internal/repository"
 	pbInventory "E-Commerce/inventory-service/proto"
 	pb "E-Commerce/order-service/proto"
-    "E-Commerce/api-gateway/internal/repository"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -15,15 +15,19 @@ import (
 )
 
 func main() {
-	inventoryConn, err := grpc.Dial("inventory-service:50051", grpc.WithInsecure())
+	inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Inventory Service: %v", err)
+	} else {
+		log.Println("Connected to Inventory Service")
 	}
 	defer inventoryConn.Close()
 
-	orderConn, err := grpc.Dial("order-service:50052", grpc.WithInsecure())
+	orderConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Order Service: %v", err)
+	} else {
+		log.Println("Connected to Order Service")
 	}
 	defer orderConn.Close()
 
@@ -32,7 +36,7 @@ func main() {
 
 	r := gin.Default()
 
-	authRepo := repository.NewAuthRepository() // Assuming authRepo is initialized here
+	authRepo := repository.NewAuthRepository() 
 	authHandler := handler.NewAuthHandler(authRepo)
 
 	// Auth routes (unprotected)
