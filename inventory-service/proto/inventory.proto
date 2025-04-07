@@ -16,7 +16,7 @@ message CreateProductRequest {
     string description = 2;
     float price = 3;
     int32 stock = 4;
-    string category_id = 5;
+    string category_id = 6;
 }
 
 message CreateProductResponse {

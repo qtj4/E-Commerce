@@ -6,6 +6,16 @@ import (
     "E-Commerce/inventory-service/internal/entity"
 )
 
+type ProductRepository interface {
+    Create(p *entity.Product) error
+    Get(id uuid.UUID) (*entity.Product, error)
+    Update(p *entity.Product) error
+    Delete(id uuid.UUID) error
+    List(categoryID string, page, pageSize int) ([]*entity.Product, int, error)
+    CheckStock(productID uuid.UUID, quantity int) (bool, error)
+    UpdateStock(productID uuid.UUID, quantity int) error
+}
+
 type productRepository struct {
     db *sqlx.DB
 }
@@ -42,12 +52,12 @@ func (r *productRepository) Delete(id uuid.UUID) error {
     return err
 }
 
-func (r *productRepository) List(categoryID uuid.UUID, page, pageSize int) ([]*entity.Product, int, error) {
+func (r *productRepository) List(categoryID string, page, pageSize int) ([]*entity.Product, int, error) {
     var products []*entity.Product
     var total int
     query := "SELECT * FROM products"
     countQuery := "SELECT COUNT(*) FROM products"
-    if categoryID != uuid.Nil {
+    if categoryID != "" {
         query += " WHERE category_id = $1"
         countQuery += " WHERE category_id = $1"
         err := r.db.Get(&total, countQuery, categoryID)

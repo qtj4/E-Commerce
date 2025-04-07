@@ -16,7 +16,6 @@ func Auth() gin.HandlerFunc {
             return
         }
 
-        // Bearer token format
         parts := strings.Split(authHeader, " ")
         if len(parts) != 2 || parts[0] != "Bearer" {
             c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token format"})
@@ -31,7 +30,6 @@ func Auth() gin.HandlerFunc {
             return
         }
 
-        // Add claims to context
         c.Set("userID", claims.UserID)
         c.Set("role", claims.Role)
         c.Next()

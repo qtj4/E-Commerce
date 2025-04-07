@@ -8,5 +8,5 @@ type Product struct {
 	Description string    `db:"description"`
 	Price       float64   `db:"price"`
 	Stock       int       `db:"stock"`
-	CategoryID  uuid.UUID `db:"category_id"`
+	CategoryID  string 	  `db:"category_id"`
 }

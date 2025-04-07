@@ -11,7 +11,7 @@ type InventoryService interface {
     GetProduct(id uuid.UUID) (*entity.Product, error)
     UpdateProduct(p *entity.Product) error
     DeleteProduct(id uuid.UUID) error
-    ListProducts(categoryID uuid.UUID, page, pageSize int) ([]*entity.Product, int, error)
+    ListProducts(categoryID string, page, pageSize int) ([]*entity.Product, int, error)
     CheckStock(productID uuid.UUID, quantity int) (bool, error)
     UpdateStock(productID uuid.UUID, quantity int) error
 }
@@ -41,7 +41,7 @@ func (s *inventoryService) DeleteProduct(id uuid.UUID) error {
     return s.repo.Delete(id)
 }
 
-func (s *inventoryService) ListProducts(categoryID uuid.UUID, page, pageSize int) ([]*entity.Product, int, error) {
+func (s *inventoryService) ListProducts(categoryID string, page, pageSize int) ([]*entity.Product, int, error) {
     return s.repo.List(categoryID, page, pageSize)
 }
 

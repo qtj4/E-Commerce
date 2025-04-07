@@ -111,7 +111,7 @@ type CreateProductRequest struct {
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	Price         float32                `protobuf:"fixed32,3,opt,name=price,proto3" json:"price,omitempty"`
 	Stock         int32                  `protobuf:"varint,4,opt,name=stock,proto3" json:"stock,omitempty"`
-	CategoryId    string                 `protobuf:"bytes,5,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
+	CategoryId    string                 `protobuf:"bytes,6,opt,name=category_id,json=categoryId,proto3" json:"category_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -851,7 +851,7 @@ const file_inventory_service_proto_inventory_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x14\n" +
 	"\x05price\x18\x03 \x01(\x02R\x05price\x12\x14\n" +
 	"\x05stock\x18\x04 \x01(\x05R\x05stock\x12\x1f\n" +
-	"\vcategory_id\x18\x05 \x01(\tR\n" +
+	"\vcategory_id\x18\x06 \x01(\tR\n" +
 	"categoryId\"E\n" +
 	"\x15CreateProductResponse\x12,\n" +
 	"\aproduct\x18\x01 \x01(\v2\x12.inventory.ProductR\aproduct\"#\n" +
