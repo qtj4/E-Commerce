@@ -36,10 +36,10 @@ func main() {
 
 	r := gin.Default()
 
-	authRepo := repository.NewAuthRepository() 
+	authRepo := repository.NewAuthRepository()
 	authHandler := handler.NewAuthHandler(authRepo)
 
-	// Auth routes 
+	// Auth routes
 	r.POST("/auth/register", authHandler.Register)
 	r.POST("/auth/login", authHandler.Login)
 
@@ -56,6 +56,7 @@ func main() {
 			admin.POST("/products", h.CreateProduct)
 			admin.PATCH("/products/:id", h.UpdateProduct)
 			admin.DELETE("/products/:id", h.DeleteProduct)
+			admin.PATCH("/orders/:id", h.UpdateOrder)
 		}
 
 		// User routes
