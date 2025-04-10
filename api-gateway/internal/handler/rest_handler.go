@@ -121,9 +121,14 @@ func (h *RESTHandler) ListProducts(c *gin.Context) {
 }
 
 func (h *RESTHandler) CreateOrder(c *gin.Context) {
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
 	var req struct {
-		UserID string `json:"user_id" binding:"required"`
-		Items  []struct {
+		Items []struct {
 			ProductID string `json:"product_id" binding:"required"`
 			Quantity  int    `json:"quantity" binding:"required"`
 		} `json:"items" binding:"required"`
@@ -132,6 +137,7 @@ func (h *RESTHandler) CreateOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	pbItems := make([]*pbOrder.OrderItem, len(req.Items))
 	for i, item := range req.Items {
 		pbItems[i] = &pbOrder.OrderItem{
@@ -139,8 +145,9 @@ func (h *RESTHandler) CreateOrder(c *gin.Context) {
 			Quantity:  int32(item.Quantity),
 		}
 	}
+
 	resp, err := h.orderClient.CreateOrder(c.Request.Context(), &pbOrder.CreateOrderRequest{
-		UserId: req.UserID,
+		UserId: userID.(string),
 		Items:  pbItems,
 	})
 	if err != nil {
@@ -178,12 +185,20 @@ func (h *RESTHandler) UpdateOrder(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(http.StatusOK, resp.Order)
 }
 
 func (h *RESTHandler) ListOrders(c *gin.Context) {
-	userID := c.Query("user_id")
+	userID, _ := c.Get("userID")
+	role, _ := c.Get("role")
+	queryUserID := c.Query("user_id")
+
+	if role == "admin" && queryUserID != "" {
+		userID = queryUserID
+	} else {
+		userID = userID.(string)
+	}
+
 	page, _ := strconv.Atoi(c.Query("page"))
 	if page < 1 {
 		page = 1
@@ -192,8 +207,9 @@ func (h *RESTHandler) ListOrders(c *gin.Context) {
 	if pageSize < 1 {
 		pageSize = 10
 	}
+
 	resp, err := h.orderClient.ListOrders(c.Request.Context(), &pbOrder.ListOrdersRequest{
-		UserId:   userID,
+		UserId:   userID.(string),
 		Page:     int32(page),
 		PageSize: int32(pageSize),
 	})

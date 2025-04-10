@@ -5,9 +5,9 @@ import (
 
 	"E-Commerce/api-gateway/internal/handler"
 	"E-Commerce/api-gateway/internal/middleware"
-	"E-Commerce/api-gateway/internal/repository"
 	pbInventory "E-Commerce/inventory-service/proto"
-	pb "E-Commerce/order-service/proto"
+	pbOrder "E-Commerce/order-service/proto"
+	pbUser "E-Commerce/user-service/proto"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -15,6 +15,7 @@ import (
 )
 
 func main() {
+	// Connect to Inventory Service
 	inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Inventory Service: %v", err)
@@ -23,6 +24,7 @@ func main() {
 	}
 	defer inventoryConn.Close()
 
+	// Connect to Order Service
 	orderConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Order Service: %v", err)
@@ -31,19 +33,30 @@ func main() {
 	}
 	defer orderConn.Close()
 
-	inventoryClient := pbInventory.NewInventoryServiceClient(inventoryConn)
-	orderClient := pb.NewOrderServiceClient(orderConn)
+	// Connect to User Service
+	userConn, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Failed to connect to User Service: %v", err)
+	} else {
+		log.Println("Connected to User Service")
+	}
+	defer userConn.Close()
 
+	// Initialize clients
+	inventoryClient := pbInventory.NewInventoryServiceClient(inventoryConn)
+	orderClient := pbOrder.NewOrderServiceClient(orderConn)
+	userClient := pbUser.NewUserServiceClient(userConn)
+
+	// Set up Gin router
 	r := gin.Default()
 
-	authRepo := repository.NewAuthRepository()
-	authHandler := handler.NewAuthHandler(authRepo)
-
-	// Auth routes
-	r.POST("/auth/register", authHandler.Register)
-	r.POST("/auth/login", authHandler.Login)
-
+	// Initialize handlers
+	userHandler := handler.NewUserHandler(userClient)
 	h := handler.NewRESTHandler(inventoryClient, orderClient)
+
+	// Auth routes (now call user-service)
+	r.POST("/auth/register", userHandler.Register)
+	r.POST("/auth/login", userHandler.Login)
 
 	// Protected routes
 	protected := r.Group("/")
@@ -65,6 +78,10 @@ func main() {
 		protected.POST("/orders", h.CreateOrder)
 		protected.GET("/orders/:id", h.GetOrder)
 		protected.GET("/orders", h.ListOrders)
+
+		// Profile routes
+		protected.GET("/users/me", userHandler.GetCurrentUser)
+		protected.PUT("/users/me", userHandler.UpdateCurrentUser)
 	}
 
 	if err := r.Run(":8080"); err != nil {
