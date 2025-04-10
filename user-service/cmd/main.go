@@ -3,10 +3,11 @@ package main
 import (
 	"log"
 	"net"
+	"os"
 
-	pb "E-Commerce/user-service/proto"
 	"E-Commerce/user-service/internal/handler"
 	"E-Commerce/user-service/internal/repository"
+	pb "E-Commerce/user-service/proto"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -14,18 +15,16 @@ import (
 )
 
 func main() {
-	// Connect to PostgreSQL
-	db, err := sqlx.Connect("postgres", "user=postgres password=secret dbname=ecommerce sslmode=disable")
+	dsn := os.Getenv("POSTGRES_URL")
+	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 	defer db.Close()
 
-	// Initialize repository and service
 	repo := repository.NewUserRepository(db)
 	service := handler.NewUserService(repo)
 
-	// Set up gRPC server
 	lis, err := net.Listen("tcp", ":50053")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)

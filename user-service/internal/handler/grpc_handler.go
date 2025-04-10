@@ -1,12 +1,12 @@
 package handler
 
 import (
-	"context"
+	"context"	
 
-	pb "E-Commerce/user-service/proto"
 	"E-Commerce/user-service/internal/auth"
 	"E-Commerce/user-service/internal/entity"
 	"E-Commerce/user-service/internal/repository"
+	pb "E-Commerce/user-service/proto"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -24,22 +24,18 @@ func NewUserService(repo repository.UserRepository) *UserService {
 }
 
 func (s *UserService) RegisterUser(ctx context.Context, req *pb.RegisterUserRequest) (*pb.AuthResponse, error) {
-	// Check if user already exists
 	existing, err := s.repo.GetUserByEmail(req.Email)
 	if err == nil && existing != nil {
 		return nil, status.Errorf(codes.AlreadyExists, "user already exists")
 	}
 
-	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to hash password")
 	}
 
-	// Generate UUID
 	id := uuid.New().String()
 
-	// Set role
 	role := req.Role
 	if role == "" {
 		role = "user"
@@ -48,7 +44,6 @@ func (s *UserService) RegisterUser(ctx context.Context, req *pb.RegisterUserRequ
 		return nil, status.Errorf(codes.InvalidArgument, "invalid role")
 	}
 
-	// Create user
 	user := &models.User{
 		ID:       id,
 		Email:    req.Email,
@@ -60,7 +55,6 @@ func (s *UserService) RegisterUser(ctx context.Context, req *pb.RegisterUserRequ
 		return nil, status.Errorf(codes.Internal, "failed to create user")
 	}
 
-	// Generate token
 	token, err := auth.GenerateToken(user.ID, user.Role)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate token")
@@ -87,7 +81,6 @@ func (s *UserService) AuthenticateUser(ctx context.Context, req *pb.Authenticate
 		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
 	}
 
-	// Generate token
 	token, err := auth.GenerateToken(user.ID, user.Role)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate token")
@@ -122,7 +115,6 @@ func (s *UserService) UpdateUserProfile(ctx context.Context, req *pb.UpdateUserP
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
-	// Hash the new password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to hash password")

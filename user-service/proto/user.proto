@@ -14,7 +14,7 @@ service UserService {
 message RegisterUserRequest {
   string email = 1;
   string password = 2;
-  string role = 3; // optional, defaults to "user"
+  string role = 3;
 }
 
 message AuthenticateUserRequest {

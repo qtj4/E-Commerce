@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-	// Connect to Inventory Service
 	inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Inventory Service: %v", err)
@@ -24,7 +23,6 @@ func main() {
 	}
 	defer inventoryConn.Close()
 
-	// Connect to Order Service
 	orderConn, err := grpc.Dial("localhost:50052", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Order Service: %v", err)
@@ -33,7 +31,6 @@ func main() {
 	}
 	defer orderConn.Close()
 
-	// Connect to User Service
 	userConn, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to User Service: %v", err)
@@ -42,19 +39,15 @@ func main() {
 	}
 	defer userConn.Close()
 
-	// Initialize clients
 	inventoryClient := pbInventory.NewInventoryServiceClient(inventoryConn)
 	orderClient := pbOrder.NewOrderServiceClient(orderConn)
 	userClient := pbUser.NewUserServiceClient(userConn)
 
-	// Set up Gin router
 	r := gin.Default()
 
-	// Initialize handlers
 	userHandler := handler.NewUserHandler(userClient)
 	h := handler.NewRESTHandler(inventoryClient, orderClient)
 
-	// Auth routes (now call user-service)
 	r.POST("/auth/register", userHandler.Register)
 	r.POST("/auth/login", userHandler.Login)
 
