@@ -4,14 +4,14 @@ import (
 	"log"
 
 	"github.com/streadway/amqp"
-	"E-Commerce/product-service/proto"
+	"E-Commerce/inventory-service/proto"
 	"google.golang.org/grpc"
 )
 
 // Config holds the configuration for the consumer-service
 type Config struct {
-	RabbitMQConn  *amqp.Connection
-	ProductClient proto.ProductServiceClient
+	RabbitMQConn    *amqp.Connection
+	InventoryClient proto.InventoryServiceClient
 }
 
 // NewConfig initializes and returns the configuration
@@ -22,14 +22,14 @@ func NewConfig() *Config {
 		log.Fatalf("Failed to connect to RabbitMQ: %v", err)
 	}
 
-	// Connect to product-service via gRPC
+	// Connect to inventory-service via gRPC
 	grpcConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Failed to connect to product-service: %v", err)
+		log.Fatalf("Failed to connect to inventory-service: %v", err)
 	}
 
 	return &Config{
-		RabbitMQConn:  rabbitConn,
-		ProductClient: proto.NewProductServiceClient(grpcConn),
+		RabbitMQConn:    rabbitConn,
+		InventoryClient: proto.NewInventoryServiceClient(grpcConn),
 	}
 }

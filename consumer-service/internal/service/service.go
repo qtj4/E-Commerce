@@ -1,8 +1,11 @@
 package service
 
 import (
+	"encoding/json"
 	"log"
-	
+
+	"github.com/streadway/amqp"
+	"E-Commerce/consumer-service/internal/entity"
 	"E-Commerce/consumer-service/internal/repository"
 )
 
@@ -25,10 +28,7 @@ func NewConsumerService(rabbitRepo repository.RabbitMQRepository, grpcRepo repos
 // ProcessOrderCreated processes order.created events from RabbitMQ
 func (s *consumerService) ProcessOrderCreated(msgs <-chan amqp.Delivery) {
 	for msg := range msgs {
-		var event struct {
-			OrderID  string   `json:"order_id"`
-			Products []string `json:"products"`
-		}
+		var event entity.OrderCreatedEvent
 		if err := json.Unmarshal(msg.Body, &event); err != nil {
 			log.Printf("Failed to unmarshal event: %v", err)
 			continue
@@ -37,7 +37,8 @@ func (s *consumerService) ProcessOrderCreated(msgs <-chan amqp.Delivery) {
 		log.Printf("Received order.created event for order %s with products: %v", event.OrderID, event.Products)
 
 		for _, productID := range event.Products {
-			err := s.grpcRepo.UpdateStock(productID, -1) // Decrease stock by 1
+			// Decrease stock by 1 (adjust quantity as needed)
+			err := s.grpcRepo.UpdateStock(productID, -1)
 			if err != nil {
 				log.Printf("Failed to update stock for product %s: %v", productID, err)
 			} else {

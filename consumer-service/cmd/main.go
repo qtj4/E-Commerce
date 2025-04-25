@@ -13,7 +13,7 @@ func main() {
 	cfg := config.NewConfig()
 
 	rabbitRepo := repository.NewRabbitMQRepository(cfg.RabbitMQConn)
-	grpcRepo := repository.NewGRPCRepository(cfg.ProductClient)
+	grpcRepo := repository.NewGRPCRepository(cfg.InventoryClient)
 	svc := service.NewConsumerService(rabbitRepo, grpcRepo)
 	h := handler.NewConsumerHandler(svc)
 

@@ -6,5 +6,5 @@ use (
 	./order-service
 	./user-service
 	./producer-service
-	
+	./consumer-service
 )
