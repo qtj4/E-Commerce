@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package producer;
+option go_package = "E-Commerce/producer-service/proto";
+
+message OrderCreatedRequest {
+    string order_id = 1;
+    repeated string product_ids = 2;
+}
+
+message OrderCreatedResponse {
+    bool success = 1;
+}
+
+service ProducerService {
+    rpc NotifyOrderCreated(OrderCreatedRequest) returns (OrderCreatedResponse);
+}
