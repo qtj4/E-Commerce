@@ -27,7 +27,7 @@ type orderService struct {
 }
 
 func NewOrderService(repo repository.OrderRepository, inventoryClient pbInventory.InventoryServiceClient) OrderService {
-	conn, err := grpc.Dial("localhost:50053", grpc.WithInsecure())
+	conn, err := grpc.Dial("localhost:50054", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to producer-service: %v", err)
 	}

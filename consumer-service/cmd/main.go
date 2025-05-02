@@ -18,7 +18,7 @@ func main() {
     }
 
     // Connect to Inventory Service
-    inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+    inventoryConn, err := grpc.Dial("localhost:50055", grpc.WithInsecure())
     if err != nil {
         log.Fatalf("Failed to connect to inventory service: %v", err)
     }
