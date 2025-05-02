@@ -30,7 +30,6 @@ func (h *ConsumerHandler) Start() error {
         }
     }()
 
-    // Handle graceful shutdown
     sigChan := make(chan os.Signal, 1)
     signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
     <-sigChan

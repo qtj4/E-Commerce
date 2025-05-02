@@ -19,7 +19,7 @@ func main() {
 	svc := service.NewProducerService(repo)
 	h := handler.NewProducerHandler(svc)
 
-	// Start gRPC server
+	
 	lis, err := net.Listen("tcp", ":50054")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)

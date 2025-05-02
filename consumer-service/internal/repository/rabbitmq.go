@@ -4,7 +4,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// RabbitMQRepository defines the interface for RabbitMQ operations
 type RabbitMQRepository interface {
     ConsumeOrderCreated() (<-chan amqp.Delivery, error)
     Close() error

@@ -7,22 +7,18 @@ import (
 	"E-Commerce/producer-service/internal/entity"
 )
 
-// RabbitMQRepository defines the interface for RabbitMQ operations
 type RabbitMQRepository interface {
 	PublishOrderCreated(event entity.OrderCreatedEvent) error
 }
 
-// rabbitMQRepository implements RabbitMQRepository
 type rabbitMQRepository struct {
 	conn *amqp.Connection
 }
 
-// NewRabbitMQRepository creates a new RabbitMQ repository
 func NewRabbitMQRepository(conn *amqp.Connection) RabbitMQRepository {
 	return &rabbitMQRepository{conn: conn}
 }
 
-// PublishOrderCreated publishes an order.created event to RabbitMQ
 func (r *rabbitMQRepository) PublishOrderCreated(event entity.OrderCreatedEvent) error {
 	ch, err := r.conn.Channel()
 	if err != nil {

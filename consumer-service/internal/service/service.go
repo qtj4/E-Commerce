@@ -36,7 +36,6 @@ func (s *consumerService) ProcessOrderCreated(msg amqp.Delivery) error {
         return err
     }
 
-    // Update inventory for each product
     for _, productID := range event.Products {
         if err := s.grpcRepo.UpdateStock(productID, -1); err != nil {
             log.Printf("Error updating stock for product %s: %v", productID, err)
