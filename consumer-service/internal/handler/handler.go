@@ -1,25 +1,39 @@
 package handler
 
 import (
-	"log"
-
-	"E-Commerce/consumer-service/internal/service"
+    "E-Commerce/consumer-service/internal/service"
+    "log"
+    "os"
+    "os/signal"
+    "syscall"
 )
 
-// ConsumerHandler handles RabbitMQ message processing
 type ConsumerHandler struct {
-	svc service.ConsumerService
+    svc service.ConsumerService
 }
 
-// NewConsumerHandler creates a new consumer handler
 func NewConsumerHandler(svc service.ConsumerService) *ConsumerHandler {
-	return &ConsumerHandler{svc: svc}
+    return &ConsumerHandler{svc: svc}
 }
 
-// ProcessOrderCreated starts processing order.created events
-func (h *ConsumerHandler) ProcessOrderCreated() {
-	err := h.svc.ProcessOrderCreated()
-	if err != nil {
-		log.Fatalf("Failed to consume messages: %v", err)
-	}
+func (h *ConsumerHandler) Start() error {
+    msgs, err := h.svc.ConsumeOrderCreated()
+    if err != nil {
+        return err
+    }
+
+    go func() {
+        for msg := range msgs {
+            if err := h.svc.ProcessOrderCreated(msg); err != nil {
+                log.Printf("Error processing message: %v", err)
+            }
+        }
+    }()
+
+    // Handle graceful shutdown
+    sigChan := make(chan os.Signal, 1)
+    signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
+    <-sigChan
+
+    return nil
 }
