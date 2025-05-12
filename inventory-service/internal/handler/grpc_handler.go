@@ -147,6 +147,6 @@ func (s *InventoryGRPCServer) UpdateStock(ctx context.Context, req *pb.UpdateSto
 	if err != nil {
 		return nil, err
 	}
-	err = s.svc.UpdateStock(pid, int(req.Quantity))
+	err = s.svc.UpdateStock(pid, int(req.Quantity), req.OrderId)
 	return &pb.UpdateStockResponse{Success: err == nil}, err
 }

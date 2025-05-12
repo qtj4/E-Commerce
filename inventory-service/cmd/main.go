@@ -1,36 +1,37 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net"
-	"os"
 
+	"E-Commerce/inventory-service/config"
 	"E-Commerce/inventory-service/internal/handler"
 	"E-Commerce/inventory-service/internal/repository"
 	"E-Commerce/inventory-service/internal/service"
 	pb "E-Commerce/inventory-service/proto"
 
-	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	dsn := os.Getenv("POSTGRES_URL")
-	db, err := sqlx.Connect("postgres", dsn)
-	if err != nil {
-		panic(err)
-	}
-	repo := repository.NewProductRepository(db)
+	cfg := config.NewConfig()
+	defer cfg.DB.Close()
+	defer cfg.Redis.Close()
+
+	repo := repository.NewProductRepository(cfg.DB, cfg.Redis)
 	svc := service.NewInventoryService(repo)
 	h := handler.NewInventoryGRPCServer(svc)
 
-	lis, err := net.Listen("tcp", ":50051")
+	lis, err := net.Listen("tcp", ":50055")
 	if err != nil {
-		panic(err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
 	pb.RegisterInventoryServiceServer(s, h)
-	fmt.Println("Inventory Service running on :50051")
-	s.Serve(lis)
+
+	log.Println("inventory-service started, listening on :50055")
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }
