@@ -15,14 +15,12 @@ type Config struct {
 }
 
 func NewConfig() *Config {
-	// Initialize PostgreSQL
 	dsn := os.Getenv("POSTGRES_URL")
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	// Initialize Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
