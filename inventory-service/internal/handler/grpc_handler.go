@@ -5,9 +5,14 @@ import (
 	"E-Commerce/inventory-service/internal/service"
 	pb "E-Commerce/inventory-service/proto"
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+var ErrProductNotFound = errors.New("product not found")
 
 type InventoryGRPCServer struct {
 	pb.UnimplementedInventoryServiceServer
@@ -24,12 +29,12 @@ func (s *InventoryGRPCServer) CreateProduct(ctx context.Context, req *pb.CreateP
 		Description: req.Description,
 		Price:       float64(req.Price),
 		Stock:       int(req.Stock),
-		CategoryID:  req.CategoryId, 
+		CategoryID:  req.CategoryId,
 	}
 
 	err := s.svc.CreateProduct(p)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to create product")
 	}
 
 	return &pb.CreateProductResponse{
@@ -47,11 +52,17 @@ func (s *InventoryGRPCServer) CreateProduct(ctx context.Context, req *pb.CreateP
 func (s *InventoryGRPCServer) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.GetProductResponse, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid product ID")
 	}
 	p, err := s.svc.GetProduct(id)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, ErrProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		return nil, status.Error(codes.Internal, "failed to get product")
+	}
+	if p == nil {
+		return nil, status.Error(codes.NotFound, "product not found")
 	}
 	return &pb.GetProductResponse{
 		Product: &pb.Product{
@@ -68,7 +79,7 @@ func (s *InventoryGRPCServer) GetProduct(ctx context.Context, req *pb.GetProduct
 func (s *InventoryGRPCServer) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.UpdateProductResponse, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid product ID")
 	}
 
 	p := &entity.Product{
@@ -77,12 +88,15 @@ func (s *InventoryGRPCServer) UpdateProduct(ctx context.Context, req *pb.UpdateP
 		Description: req.Description,
 		Price:       float64(req.Price),
 		Stock:       int(req.Stock),
-		CategoryID:  req.CategoryId, 
+		CategoryID:  req.CategoryId,
 	}
 
 	err = s.svc.UpdateProduct(p)
 	if err != nil {
-		return nil, err
+		if errors.Is(err, ErrProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		return nil, status.Error(codes.Internal, "failed to update product")
 	}
 
 	return &pb.UpdateProductResponse{
@@ -100,16 +114,22 @@ func (s *InventoryGRPCServer) UpdateProduct(ctx context.Context, req *pb.UpdateP
 func (s *InventoryGRPCServer) DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.DeleteProductResponse, error) {
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid product ID")
 	}
 	err = s.svc.DeleteProduct(id)
-	return &pb.DeleteProductResponse{Success: err == nil}, err
+	if err != nil {
+		if errors.Is(err, ErrProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		return nil, status.Error(codes.Internal, "failed to delete product")
+	}
+	return &pb.DeleteProductResponse{Success: true}, nil
 }
 
 func (s *InventoryGRPCServer) ListProducts(ctx context.Context, req *pb.ListProductsRequest) (*pb.ListProductsResponse, error) {
 	products, total, err := s.svc.ListProducts(req.CategoryId, int(req.Page), int(req.PageSize))
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.Internal, "failed to list products")
 	}
 
 	pbProducts := make([]*pb.Product, len(products))
@@ -133,11 +153,14 @@ func (s *InventoryGRPCServer) ListProducts(ctx context.Context, req *pb.ListProd
 func (s *InventoryGRPCServer) CheckStock(ctx context.Context, req *pb.CheckStockRequest) (*pb.CheckStockResponse, error) {
 	pid, err := uuid.Parse(req.ProductId)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid product ID")
 	}
 	available, err := s.svc.CheckStock(pid, int(req.Quantity))
 	if err != nil {
-		return nil, err
+		if errors.Is(err, ErrProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		return nil, status.Error(codes.Internal, "failed to check stock")
 	}
 	return &pb.CheckStockResponse{Available: available}, nil
 }
@@ -145,8 +168,14 @@ func (s *InventoryGRPCServer) CheckStock(ctx context.Context, req *pb.CheckStock
 func (s *InventoryGRPCServer) UpdateStock(ctx context.Context, req *pb.UpdateStockRequest) (*pb.UpdateStockResponse, error) {
 	pid, err := uuid.Parse(req.ProductId)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(codes.InvalidArgument, "invalid product ID")
 	}
 	err = s.svc.UpdateStock(pid, int(req.Quantity), req.OrderId)
-	return &pb.UpdateStockResponse{Success: err == nil}, err
+	if err != nil {
+		if errors.Is(err, ErrProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		return nil, status.Error(codes.Internal, "failed to update stock")
+	}
+	return &pb.UpdateStockResponse{Success: true}, nil
 }

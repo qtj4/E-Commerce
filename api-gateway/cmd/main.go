@@ -5,16 +5,22 @@ import (
 
 	"E-Commerce/api-gateway/internal/handler"
 	"E-Commerce/api-gateway/internal/middleware"
+	"E-Commerce/api-gateway/internal/observability"
 	pbInventory "E-Commerce/inventory-service/proto"
 	pbOrder "E-Commerce/order-service/proto"
 	pbUser "E-Commerce/user-service/proto"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 )
 
 func main() {
+	// Initialize tracing
+	cleanup := observability.InitTracer()
+	defer cleanup()
+
 	inventoryConn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to Inventory Service: %v", err)
@@ -44,6 +50,12 @@ func main() {
 	userClient := pbUser.NewUserServiceClient(userConn)
 
 	r := gin.Default()
+
+	// Add telemetry middleware
+	r.Use(middleware.Telemetry())
+
+	// Expose metrics endpoint for Prometheus
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	userHandler := handler.NewUserHandler(userClient)
 	h := handler.NewRESTHandler(inventoryClient, orderClient)

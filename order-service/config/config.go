@@ -5,6 +5,7 @@ import (
 	"os"
 
 	pbInventory "E-Commerce/inventory-service/proto"
+	"E-Commerce/order-service/internal/utils"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -14,6 +15,7 @@ import (
 type Config struct {
 	DB              *sqlx.DB
 	InventoryClient pbInventory.InventoryServiceClient
+	EmailConfig     utils.EmailConfig
 }
 
 func NewConfig() *Config {
@@ -29,8 +31,16 @@ func NewConfig() *Config {
 	}
 	inventoryClient := pbInventory.NewInventoryServiceClient(conn)
 
+	emailConfig := utils.EmailConfig{
+		SenderEmail:    "e_book_aitu@zohomail.com",
+		SenderPassword: "gakon2006",
+		SMTPHost:       "smtp.zoho.com",
+		SMTPPort:       "587",
+	}
+
 	return &Config{
 		DB:              db,
 		InventoryClient: inventoryClient,
+		EmailConfig:     emailConfig,
 	}
 }
