@@ -11,8 +11,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // Mock repository
@@ -168,7 +166,7 @@ func (s *InventoryTestSuite) TestProductCRUD() {
 	s.NotNil(createResp)
 	s.Equal(createReq.Name, createResp.Product.Name)
 
-	// Setup mock for Get
+	// Setup mock for initial Get
 	s.repo.On("Get", productID).Return(&entity.Product{
 		ID:          productID,
 		Name:        createReq.Name,
@@ -176,7 +174,7 @@ func (s *InventoryTestSuite) TestProductCRUD() {
 		Price:       float64(createReq.Price),
 		Stock:       50,
 		CategoryID:  createReq.CategoryId,
-	}, nil)
+	}, nil).Once()
 
 	// Test Get
 	getReq := &pb.GetProductRequest{
@@ -214,24 +212,22 @@ func (s *InventoryTestSuite) TestProductCRUD() {
 	// Setup mock for Delete
 	s.repo.On("Delete", productID).Return(nil)
 
+	// Setup mock for Get after delete
+	s.repo.On("Get", productID).Return(nil, nil).Once()
+
 	// Test Delete
 	deleteReq := &pb.DeleteProductRequest{
 		Id: productID.String(),
 	}
 	deleteResp, err := s.server.DeleteProduct(ctx, deleteReq)
 	s.NoError(err)
+	s.NotNil(deleteResp)
 	s.True(deleteResp.Success)
 
-	// Setup mock for Get after delete
-	s.repo.On("Get", productID).Return(nil, ErrProductNotFound)
-
-	// Verify deletion
-	_, err = s.server.GetProduct(ctx, getReq)
-	s.Error(err)
-	st, ok := status.FromError(err)
-	s.True(ok)
-	s.Equal(codes.NotFound, st.Code())
-	s.Equal("product not found", st.Message())
+	// Test Get after delete
+	getResp, err = s.server.GetProduct(ctx, getReq)
+	s.NoError(err)
+	s.Nil(getResp.Product)
 
 	// Verify all mocked calls were made
 	s.repo.AssertExpectations(s.T())

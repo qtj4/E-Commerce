@@ -57,12 +57,12 @@ func (s *InventoryGRPCServer) GetProduct(ctx context.Context, req *pb.GetProduct
 	p, err := s.svc.GetProduct(id)
 	if err != nil {
 		if errors.Is(err, ErrProductNotFound) {
-			return nil, status.Error(codes.NotFound, "product not found")
+			return &pb.GetProductResponse{Product: nil}, nil
 		}
 		return nil, status.Error(codes.Internal, "failed to get product")
 	}
 	if p == nil {
-		return nil, status.Error(codes.NotFound, "product not found")
+		return &pb.GetProductResponse{Product: nil}, nil
 	}
 	return &pb.GetProductResponse{
 		Product: &pb.Product{
